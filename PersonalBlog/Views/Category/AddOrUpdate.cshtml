@@ -1,0 +1,32 @@
+﻿@model AddOrUpdateCategoryViewModel
+@{
+    ViewData["Title"] = "AddOrUpdate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isCreate = Model.CategoryId == 0 ? true : false;
+}
+
+<h1>@(!isCreate ? "Düzenle" : "Yeni Kategori")</h1>
+
+<button asp-controller="Category" asp-action="CategoryList" class="btn btn-outline-primary mb-1">Kategori Listesi</button>
+
+<form asp-controller="Category" asp-action="AddOrUpdate" method="post">
+    <input type="hidden" asp-for="CategoryId" />
+
+    @if (!isCreate)
+    {
+        <div class="form-group">
+            <label>Id</label>
+            <input asp-for="CategoryId" class="form-control" disabled />
+        </div>
+    }
+
+<div class="form-group">
+    <label>Kategori Adı</label>
+    <span asp-validation-for="CategoryName" class="d-block text-danger"></span>
+    <input asp-for="CategoryName" class="form-control" />
+</div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+
+</form>
+

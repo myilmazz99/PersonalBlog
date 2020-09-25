@@ -1,0 +1,64 @@
+﻿@using PersonalBlog.Extensions
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Dropify/css/dropify.css" rel="stylesheet" />
+    <link href="~/AlertifyJS/css/alertify.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+</head>
+<body id="admin">
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/admin">Bilelim Admin Panel</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Anasayfa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Blog" asp-action="BlogList">Bloglar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Category" asp-action="CategoryList">Kategoriler</a>
+                        </li>
+                    </ul>
+                    <div class="my-2 my-lg-0">
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger my-2 my-sm-0 logout-btn">Çıkış Yap</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    }
+
+
+    <div class="container my-5">
+        @RenderBody()
+    </div>
+
+    <script src="~/jquery/jquery.min.js"></script>
+    <script src="~/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/Dropify/js/dropify.min.js"></script>
+    <script src="~/AlertifyJS/alertify.min.js"></script>
+
+    @if (TempData["message"] != null)
+    {
+        var message = TempData.Get<ResultMessageViewModel>("message");
+        <script>
+            alertify.set('notifier','position', 'top-center');
+            alertify.notify("@message.Message", "@message.CssColor", 4);
+        </script>
+    }
+    @RenderSection("Scripts", false)
+</body>
+</html>

@@ -1,0 +1,50 @@
+﻿@model List<BlogViewModel>
+@using PersonalBlog.Extensions;
+@{
+    ViewData["Title"] = "Blog Listesi";
+    Layout = "_Layout";
+}
+
+<h1>Blog Listesi</h1>
+
+<a asp-controller="Blog" asp-action="AddOrUpdate" class="btn btn-success mb-2">Yeni Blog</a>
+
+<table class="table table-bordered table-striped text-center">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Ana Resim</th>
+            <th>Başlık</th>
+            <th>Kategori</th>
+            <th>Tarih</th>
+            <th>Yayında mı?</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BlogId</td>
+                <td><img src="@item.MainImage" width="80" height="40" /></td>
+                <td>@item.Header</td>
+                <td>@item.CategoryName</td>
+                <td>@item.AddedDate</td>
+                <td>
+                    @if (item.IsPublished)
+                    {
+                        <div class="badge badge-pill badge-success">Yayında</div>
+                    }
+                    else
+                    {
+                        <div class="badge badge-pill badge-danger">Yayında değil</div>
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Blog" asp-action="AddOrUpdate" asp-route-blogId="@item.BlogId" class="btn btn-warning btn-sm">Düzenle</a>
+                    <a asp-controller="Blog" asp-action="Delete" asp-route-blogId="@item.BlogId" class="btn btn-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

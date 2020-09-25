@@ -1,0 +1,28 @@
+﻿@model LoginDto
+@{
+    Layout = "../Shared/_Layout.cshtml";
+}
+
+<div class="col-6 mx-auto">
+    <div class="card shadow border-0 text-center">
+        <div class="card-header border-bottom-0">
+            <h3>Giriş Yap</h3>
+        </div>
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger text-left"></div>
+
+                <div class="form-group">
+                    <input asp-for="Username" placeholder="Kullanıcı adınız.." class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input asp-for="Password" placeholder="Şifreniz.." class="form-control" />
+                </div>
+
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-success" type="submit">Giriş Yap</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, lazy } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 //Router
 import { Route, Switch } from "react-router-dom";
@@ -11,6 +11,7 @@ import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.min.css";
 import { bindActionCreators } from "redux";
 import PageLoading from "./Components/Utilities/PageLoading";
+import loadable from "@loadable/component";
 
 const App = ({ ui: { isSuccess, resultMessage }, getBlogCount }) => {
   const [initialLoad, setInitialLoad] = useState(true);
@@ -30,22 +31,28 @@ const App = ({ ui: { isSuccess, resultMessage }, getBlogCount }) => {
     setInitialLoad(false);
   }, [isSuccess, resultMessage]);
 
-  const Home = lazy(() => import("./Pages/Home"));
-  const NotFound = lazy(() => import("./Pages/NotFound"));
-  const Blogs = lazy(() => import("./Pages/Blogs"));
-  const BlogDetails = lazy(() => import("./Pages/BlogDetails"));
+  const Home = loadable(() => import("./Pages/Home"), {
+    fallback: <PageLoading />,
+  });
+  const NotFound = loadable(() => import("./Pages/NotFound"), {
+    fallback: <PageLoading />,
+  });
+  const Blogs = loadable(() => import("./Pages/Blogs"), {
+    fallback: <PageLoading />,
+  });
+  const BlogDetails = loadable(() => import("./Pages/BlogDetails"), {
+    fallback: <PageLoading />,
+  });
 
   return (
     <>
       <ScrollToTop />
-      <Suspense fallback={<PageLoading />}>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/blogs" component={Blogs} />
-          <Route exact path="/blogs/:id" component={BlogDetails} />
-          <Route component={NotFound} />
-        </Switch>
-      </Suspense>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/blogs" component={Blogs} />
+        <Route exact path="/blogs/:id" component={BlogDetails} />
+        <Route component={NotFound} />
+      </Switch>
       <Footer />
     </>
   );

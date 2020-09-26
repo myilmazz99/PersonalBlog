@@ -1,16 +1,12 @@
 ﻿using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DataAccess.Concrete.Contexts
 {
     public class BlogContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public BlogContext(DbContextOptions<BlogContext> opt) : base(opt)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB; Database=PersonalBlogDB; Trusted_Connection=true");
         }
 
         public DbSet<Blog> Blogs { get; set; }

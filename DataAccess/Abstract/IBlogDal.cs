@@ -1,11 +1,6 @@
-﻿using Core.DataAccess.Abstract;
-using Core.Utilities.Result;
-using Entities.Concrete;
+﻿using Entities.Concrete;
 using Entities.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Abstract
@@ -23,6 +18,5 @@ namespace DataAccess.Abstract
         Task AddImages(AddOrUpdateBlogDto blog);
         Task DeleteImage(int blogImageId);
         Task<int> GetLatestBlogId();
-        Task<List<Blog>> GetLatestThree();
     }
 }

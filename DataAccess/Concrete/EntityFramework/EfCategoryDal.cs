@@ -1,5 +1,4 @@
-﻿using Core.DataAccess.Concrete;
-using DataAccess.Abstract;
+﻿using DataAccess.Abstract;
 using DataAccess.Concrete.Contexts;
 using Entities.Concrete;
 using System;
@@ -8,7 +7,11 @@ using System.Text;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    public class EfCategoryDal : EfEntityRepository<Category, BlogContext>, ICategoryDal
+    public class EfCategoryDal : EfEntityRepository<Category>, ICategoryDal
     {
+        public EfCategoryDal(BlogContext context) : base(context)
+        {
+
+        }
     }
 }

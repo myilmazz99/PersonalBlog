@@ -43,9 +43,8 @@ namespace PersonalBlog
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<SignInManager<ApplicationUser>>();
 
-            services.AddCors(setup => setup.AddPolicy("PersonalBlogPolicy", conf => conf.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod()));
-
-            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("IdentityCS")));
+            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
+            services.AddDbContext<BlogContext>(opt => opt.UseSqlServer(Configuration.GetSection("ConnectionString").Value));
             services.AddIdentity<ApplicationUser, IdentityRole>().AddErrorDescriber<IdentityErrorDescriberTurkish>().AddEntityFrameworkStores<ApplicationIdentityContext>().AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(opt =>
@@ -80,7 +79,7 @@ namespace PersonalBlog
 
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
             }
             else
             {
@@ -91,7 +90,6 @@ namespace PersonalBlog
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseCors("PersonalBlogPolicy");
 
             app.UseRouting();
 

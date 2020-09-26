@@ -39,12 +39,6 @@ namespace Business.Concrete
             return new SuccessDataResult<BlogForViewDto>(_mapper.Map<BlogForViewDto>(blog));
         }
 
-        public async Task<DataResult<List<BlogForViewDto>>> GetLatestThree()
-        {
-            var blogs = await _blogDal.GetLatestThree();
-            return new SuccessDataResult<List<BlogForViewDto>>(_mapper.Map<List<BlogForViewDto>>(blogs));
-        }
-
         public async Task<IResult> AddComment(CommentDto comment)
         {
             await _blogDal.AddComment(_mapper.Map<Comment>(comment));

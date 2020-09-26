@@ -13,7 +13,6 @@ namespace Business.Abstract
         Task<int> GetBlogCount();
         Task<DataResult<BlogForViewDto>> GetByIdForView(int blogId);
         Task<DataResult<List<BlogForViewDto>>> GetAllForView(int page);
-        Task<DataResult<List<BlogForViewDto>>> GetLatestThree();
         Task<DataResult<AddOrUpdateBlogDto>> GetByIdWithImages(int blogId);
         Task<DataResult<BlogDto>> GetAll();
         Task<IResult> AddComment(CommentDto comment);

@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using PersonalBlog.Extensions;
 
 namespace PersonalBlog
 {
@@ -86,6 +87,7 @@ namespace PersonalBlog
                 app.UseExceptionHandler("/Error");
             }
 
+            app.ConfigureExceptionHandler();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

@@ -24,20 +24,20 @@ namespace PersonalBlog.Controllers.Api
         public async Task<IActionResult> GetAll(int page)
         {
             var result = await _blogService.GetAllForView(page);
-            if (result.Success)
+            if (!result.Success)
             {
-                foreach (var item in result.Data)
-                {
-                    var user = await _accountService.GetUserById(item.WriterId);
-                    item.WriterName = user.Data.FullName;
-                    item.WriterSummary = user.Data.Summary;
-                    item.WriterProfilePictureUrl = user.Data.ProfileImageUrl;
-                }
-
-                return Ok(result.Data);
+                return BadRequest();
             }
 
-            return BadRequest();
+            foreach (var item in result.Data)
+            {
+                var user = await _accountService.GetUserById(item.WriterId);
+                item.WriterName = user.Data.FullName;
+                item.WriterSummary = user.Data.Summary;
+                item.WriterProfilePictureUrl = user.Data.ProfileImageUrl;
+            }
+
+            return Ok(result.Data);
         }
 
         [HttpGet("{id}")]
@@ -85,10 +85,10 @@ namespace PersonalBlog.Controllers.Api
             }
             return BadRequest();
         }
-        
+
         [HttpPut("incrementview")]
         public async Task<IActionResult> IncrementView(int blogId)
-       {
+        {
             var result = await _blogService.IncrementView(blogId);
             if (result.Success)
             {

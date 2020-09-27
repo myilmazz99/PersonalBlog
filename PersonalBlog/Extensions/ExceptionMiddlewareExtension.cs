@@ -18,7 +18,8 @@ namespace PersonalBlog.Extensions
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        Exception ex = CheckInnerException(contextFeature.Error);
+                        await Task.Run(() => { Exception ex = CheckInnerException(contextFeature.Error); });
+
                         context.Response.StatusCode = 500;
                     }
                 });

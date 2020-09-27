@@ -38,7 +38,7 @@ namespace Business.Concrete
 
         public DataResult<string> GetUserId(ClaimsPrincipal claimsPrincipal)
         {
-            return new SuccessDataResult<string>(_userManager.GetUserId(claimsPrincipal));
+            return new SuccessDataResult<string>("", _userManager.GetUserId(claimsPrincipal));
         }
 
         public async Task<Result> Login(LoginDto dto)
@@ -50,7 +50,8 @@ namespace Business.Concrete
             if (signInResult.Succeeded)
             {
                 return new SuccessResult("Kullanıcı girişi başarılı.");
-            }else if (signInResult.IsLockedOut)
+            }
+            else if (signInResult.IsLockedOut)
             {
                 return new ErrorResult("Ard arda çok fazla hatalı giriş sebebiyle giriş yapmanız engellendi. 30 saniye içinde tekrar deneyebilirsiniz.");
             }

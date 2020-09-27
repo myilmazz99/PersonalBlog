@@ -18,8 +18,7 @@ namespace Business.Mapper
             CreateMap<Blog, BlogForViewDto>()
                 .ForMember(d => d.AddedDate, s => s.MapFrom(i => i.AddedDate.ToLongDateString()))
                 .ForMember(d => d.CategoryName, s => s.MapFrom(i => i.Category.CategoryName))
-                .ForMember(d => d.CommentCount, s => s.MapFrom(i => i.Comments.Count))
-                .ForMember(d => d.WriterId, s => s.MapFrom(i => i.UserId));
+                .ForMember(d => d.CommentCount, s => s.MapFrom(i => i.Comments.Count));
         }
     }
 }

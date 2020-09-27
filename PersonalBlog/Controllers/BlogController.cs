@@ -28,7 +28,7 @@ namespace PersonalBlog.Controllers
             _categoryService = categoryService;
             _accountService = accountService;
         }
-        
+
         public async Task<IActionResult> BlogList()
         {
             var result = await _blogService.GetAll();
@@ -69,57 +69,51 @@ namespace PersonalBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> AddOrUpdate(AddOrUpdateBlogViewModel model, IFormFile mainImage)
         {
-            if (ModelState.IsValid)
+            if (mainImage != null)
             {
-                if (mainImage != null)
-                {
-                    var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/uploads");
-                    var filePath = Path.Combine(dir, mainImage.FileName);
-                    var imageUrl = Path.Combine(Path.DirectorySeparatorChar.ToString(), "img", "uploads", mainImage.FileName);
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/uploads");
+                var filePath = Path.Combine(dir, mainImage.FileName);
+                var imageUrl = Path.Combine(Path.DirectorySeparatorChar.ToString(), "img", "uploads", mainImage.FileName);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await mainImage.CopyToAsync(stream);
-                    }
-
-                    model.MainImage = imageUrl;
-                }
-                
-                //apply writer
-                var userIdResult = _accountService.GetUserId(HttpContext.User);
-
-                var result = await _blogService.AddOrUpdate(new Entities.Dtos.AddOrUpdateBlogDto
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    BlogId = model.BlogId,
-                    BlogImages = model.BlogImages,
-                    CategoryId = model.CategoryId,
-                    CategoryName = model.CategoryName,
-                    Content = model.Content,
-                    Header = model.Header,
-                    MainImage = model.MainImage,
-                    IsPublished = model.IsPublished,
-                    UserId = userIdResult.Data
-                });
-
-                if (result.Success)
-                {
-                    if (model.BlogId == 0)
-                    {
-                        model.BlogId = result.Data;
-                        model.CategoryList = await GetCategories(model.CategoryName);
-                        return View(model);
-                    }
-                    TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.success });
-                    return RedirectToAction("BlogList");
-                }
-                else
-                {
-                    return View("Error");
+                    await mainImage.CopyToAsync(stream);
                 }
 
+                model.MainImage = imageUrl;
             }
 
-            return View(model);
+            //apply writer
+            var userIdResult = _accountService.GetUserId(HttpContext.User);
+
+            var result = await _blogService.AddOrUpdate(new Entities.Dtos.AddOrUpdateBlogDto
+            {
+                BlogId = model.BlogId,
+                BlogImages = model.BlogImages,
+                CategoryId = model.CategoryId,
+                CategoryName = model.CategoryName,
+                Content = model.Content,
+                Header = model.Header,
+                MainImage = model.MainImage,
+                IsPublished = model.IsPublished,
+                WriterId = userIdResult.Data
+            });
+
+            if (result.Success)
+            {
+                if (model.BlogId == 0)
+                {
+                    model.BlogId = result.Data;
+                    model.CategoryList = await GetCategories(model.CategoryName);
+                    return View(model);
+                }
+                TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.success });
+                return RedirectToAction("BlogList");
+            }
+            else
+            {
+                return View("Error");
+            }
         }
 
         public async Task<IActionResult> Delete(int blogId)

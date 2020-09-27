@@ -109,7 +109,7 @@ namespace Business.Concrete
                     Header = addOrUpdateBlogDto.Header,
                     MainImage = addOrUpdateBlogDto.MainImage,
                     IsPublished = addOrUpdateBlogDto.IsPublished,
-                    UserId = addOrUpdateBlogDto.UserId
+                    WriterId = addOrUpdateBlogDto.WriterId
                 });
 
                 int blogId = await _blogDal.GetLatestBlogId();

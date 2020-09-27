@@ -76,7 +76,6 @@ namespace PersonalBlog
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
             if (env.IsDevelopment())
             {

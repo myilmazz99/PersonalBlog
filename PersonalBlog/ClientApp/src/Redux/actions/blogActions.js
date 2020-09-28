@@ -18,17 +18,20 @@ export const getBlogs = (page) => {
       let request = await axios.get(`/api/blogs/?page=${page || 0}`);
       dispatch({ type: actionTypes.GET_BLOGS_SUCCESS, payload: request.data });
     } catch (error) {
-      console.log(error);
+      dispatchActionResult(
+        dispatch,
+        false,
+        "Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+      );
     }
   };
 };
 
 export const getBlogById = (blogId, history) => async (dispatch) => {
   try {
-    dispatch({ type: actionTypes.LOADING_UI });
+    dispatch({ type: actionTypes.LOADING_BLOGS });
     let res = await axios.get(`/api/blogs/${blogId}`);
     dispatch({ type: actionTypes.GET_BLOGBYID_SUCCESS, payload: res.data });
-    dispatch({ type: actionTypes.STOP_LOADING_UI });
   } catch (e) {
     history.push("/404");
   }

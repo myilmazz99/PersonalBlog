@@ -4,6 +4,7 @@ using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace PersonalBlog.Controllers.Api
 {
@@ -13,16 +14,19 @@ namespace PersonalBlog.Controllers.Api
     {
         private readonly IBlogService _blogService;
         private readonly IAccountService _accountService;
+        private readonly ILogger<BlogsController> _logger;
 
-        public BlogsController(IBlogService blogService, IAccountService accountService)
+        public BlogsController(IBlogService blogService, IAccountService accountService, ILogger<BlogsController> logger)
         {
             _blogService = blogService;
             _accountService = accountService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll(int page)
         {
+            _logger.LogInformation("Initializing GetAll method on controller...");
             var result = await _blogService.GetAllForView(page);
             if (!result.Success)
             {

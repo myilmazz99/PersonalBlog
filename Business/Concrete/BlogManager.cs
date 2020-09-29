@@ -17,18 +17,15 @@ namespace Business.Concrete
     {
         private readonly IBlogDal _blogDal;
         private readonly IMapper _mapper;
-        private readonly ILogger<BlogManager> _logger;
 
-        public BlogManager(IBlogDal blogDal, IMapper mapper, ILogger<BlogManager> logger)
+        public BlogManager(IBlogDal blogDal, IMapper mapper)
         {
             _blogDal = blogDal;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<DataResult<List<BlogForViewDto>>> GetAllForView(int page)
         {
-            _logger.LogInformation("Initializing request came from blogscontroller...");
             var blogs = await _blogDal.GetAllForView(page);
             return new SuccessDataResult<List<BlogForViewDto>>(_mapper.Map<List<BlogForViewDto>>(blogs));
         }

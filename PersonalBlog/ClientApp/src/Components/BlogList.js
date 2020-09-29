@@ -34,8 +34,7 @@ const BlogList = ({
   };
 
   useEffect(() => {
-    if (latestThreeBlogs.length === 0 && blogs.length !== 0)
-      setLatestThreeBlogs(blogs.slice(0, 3));
+    if (blogs.length !== 0) setLatestThreeBlogs(blogs.slice(0, 3));
   }, [blogs]);
 
   useEffect(() => {

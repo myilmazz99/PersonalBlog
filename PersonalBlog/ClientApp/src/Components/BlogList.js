@@ -12,6 +12,7 @@ const BlogList = ({
   blogReducer: { blogs, loadingBlogs, page, hasMoreBlogs, blogCount },
   getBlogs,
   currentCategory,
+  isSuccess,
 }) => {
   const {
     location: { pathname },
@@ -40,8 +41,9 @@ const BlogList = ({
   useEffect(() => {
     if (
       (blogs.length !== 0 && blogs.length < blogCount) ||
-      blogs.length === 0
+      (blogs.length === 0 && isSuccess)
     ) {
+      console.log("eben");
       getBlogs(page);
     }
   }, []);
@@ -117,6 +119,7 @@ const mapStateToProps = (state) => {
   return {
     blogReducer: state.blogReducer,
     currentCategory: state.categoryReducer.currentCategory.categoryName,
+    isSuccess: state.uiReducer.isSuccess,
   };
 };
 

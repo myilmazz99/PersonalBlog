@@ -407,7 +407,6 @@ main {
 
     #blog-content {
       p {
-        text-indent: 2rem;
         margin-bottom: 2rem;
       }
 
@@ -416,10 +415,17 @@ main {
         color: $greyed_black;
         margin-bottom: 3rem;
         font-size: smaller;
+
+        span {
+          margin-right: 1rem;
+        }
       }
 
       .html-content {
         max-width: 100%;
+        p {
+          line-height: 150% !important;
+        }
 
         iframe {
           max-width: 100%;

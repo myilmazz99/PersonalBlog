@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 //Route
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 //Redux
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -9,12 +9,15 @@ import CategoryList from "./CategoryList";
 import LoadingSpinner from "./Utilities/LoadingSpinner";
 
 const BlogList = ({
-  path,
   blogReducer: { blogs, loadingBlogs, page, hasMoreBlogs, blogCount },
   getBlogs,
   currentCategory,
 }) => {
-  const [onBlogsPage] = useState(path.indexOf("blogs") > 0);
+  const {
+    location: { pathname },
+  } = useHistory();
+  const [onBlogsPage] = useState(pathname.indexOf("blogs") > 0);
+  const [latestThreeBlogs, setLatestThreeBlogs] = useState([]);
   const observer = useRef();
 
   const lastBlogRef = (node) => {
@@ -30,14 +33,50 @@ const BlogList = ({
   };
 
   useEffect(() => {
-    if (blogs.length < blogCount) {
+    if (latestThreeBlogs.length === 0 && blogs.length !== 0)
+      setLatestThreeBlogs(blogs.slice(0, 3));
+  }, [blogs]);
+
+  useEffect(() => {
+    if (
+      (blogs.length !== 0 && blogs.length < blogCount) ||
+      blogs.length === 0
+    ) {
       getBlogs(page);
     }
-  }, [blogCount]);
+  }, []);
 
-  if (!onBlogsPage) {
-    blogs = blogs.slice(0, 3);
-  }
+  const renderBlogPreview = (blog, i) => (
+    <Link
+      ref={blogs.length === i + 1 ? lastBlogRef : null}
+      key={blog.blogId}
+      to={`/blogs/${blog.blogId}`}
+    >
+      <div className="blog-preview">
+        <div className="blog-img">
+          <img src={blog.mainImage} alt="" />
+        </div>
+
+        <div className="blog-details">
+          <h2>{blog.header}</h2>
+          <div className="category">{blog.categoryName}</div>
+          <small>
+            <span>
+              {blog.addedDate}, by {blog.writerName}
+            </span>
+            <span>
+              <span className="blog-details-icon">
+                <i className="fas fa-eye"></i> {blog.viewCount}
+              </span>
+              <span className="blog-details-icon">
+                <i className="fas fa-comment"></i> {blog.commentCount}
+              </span>
+            </span>
+          </small>
+        </div>
+      </div>
+    </Link>
+  );
 
   return (
     <>
@@ -50,44 +89,15 @@ const BlogList = ({
           <div className="blog-header">Son Eklenenler</div>
         )}
 
-        {blogs &&
-          blogs
-            .filter((blog) =>
-              currentCategory && onBlogsPage
-                ? blog.categoryName === currentCategory
-                : blog
-            )
-            .map((blog, i) => (
-              <Link
-                ref={blogs.length === i + 1 ? lastBlogRef : null}
-                key={blog.blogId}
-                to={`/blogs/${blog.blogId}`}
-              >
-                <div className="blog-preview">
-                  <div className="blog-img">
-                    <img src={blog.mainImage} alt="" />
-                  </div>
-
-                  <div className="blog-details">
-                    <h2>{blog.header}</h2>
-                    <div className="category">{blog.categoryName}</div>
-                    <small>
-                      <span>
-                        {blog.addedDate}, by {blog.writerName}
-                      </span>
-                      <span>
-                        <span className="blog-details-icon">
-                          <i className="fas fa-eye"></i> {blog.viewCount}
-                        </span>
-                        <span className="blog-details-icon">
-                          <i className="fas fa-comment"></i> {blog.commentCount}
-                        </span>
-                      </span>
-                    </small>
-                  </div>
-                </div>
-              </Link>
-            ))}
+        {onBlogsPage
+          ? blogs &&
+            blogs
+              .filter((blog) =>
+                currentCategory ? blog.categoryName === currentCategory : blog
+              )
+              .map((blog, i) => renderBlogPreview(blog, i))
+          : blogs &&
+            latestThreeBlogs.map((blog, i) => renderBlogPreview(blog, i))}
 
         {loadingBlogs ? <LoadingSpinner /> : ""}
 

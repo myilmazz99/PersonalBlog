@@ -4,9 +4,9 @@ import blogimg from "../img/blogs.jpg";
 import BlogList from "../Components/BlogList";
 import Header from "../Components/Header";
 import axios from "axios";
-import { Helmet } from 'react-helmet';
+import { Helmet } from "react-helmet";
 
-const Blogs = ({ match: { path }, ...props }) => {
+const Blogs = () => {
   let pickAphorism = async () => {
     let aphorisms = await axios.get("/aphorism.json");
     let aphorism =
@@ -15,12 +15,12 @@ const Blogs = ({ match: { path }, ...props }) => {
   };
 
   return (
-      <>
-          <Helmet>
-              <title>Bilelim - Makaleler</title>
-          </Helmet>
+    <>
+      <Helmet>
+        <title>Bilelim - Makaleler</title>
+      </Helmet>
       <Header img={blogimg} pickAphorism={pickAphorism} />
-      <BlogList path={path} />
+      <BlogList />
     </>
   );
 };

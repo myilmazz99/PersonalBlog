@@ -43,7 +43,6 @@ const BlogList = ({
       (blogs.length !== 0 && blogs.length < blogCount) ||
       (blogs.length === 0 && isSuccess)
     ) {
-      console.log("eben");
       getBlogs(page);
     }
   }, []);

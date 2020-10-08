@@ -75,18 +75,6 @@ namespace PersonalBlog.Controllers.Api
             return BadRequest("Yorumunuz Eklenemedi.");
         }
 
-        [HttpPost("removecomment")]
-        [Authorize]
-        public async Task<IActionResult> RemoveComment(CommentDto comment)
-        {
-            var result = await _blogService.RemoveComment(comment);
-            if (result.Success)
-            {
-                return Ok(new { message = result.Message });
-            }
-            return BadRequest();
-        }
-
         [HttpPut("incrementview")]
         public async Task<IActionResult> IncrementView(int blogId)
         {

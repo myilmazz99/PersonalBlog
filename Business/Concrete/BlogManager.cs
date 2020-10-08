@@ -5,6 +5,7 @@ using Core.Utilities.Result;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -26,13 +27,21 @@ namespace Business.Concrete
 
         public async Task<DataResult<List<BlogForViewDto>>> GetAllForView(int page)
         {
-            var blogs = await _blogDal.GetAllForView(page);
+            var blogs = await _blogDal.GetAll(
+                skip: page * 3,
+                take: 3,
+                filter: i => i.IsPublished,
+                orderbyDescending: i => i.AddedDate,
+                include: i => i.Include(x => x.Comments).Include(x => x.Category)
+            );
+
             return new SuccessDataResult<List<BlogForViewDto>>(_mapper.Map<List<BlogForViewDto>>(blogs));
         }
 
         public async Task<DataResult<BlogForViewDto>> GetByIdForView(int blogId)
         {
-            var blog = await _blogDal.GetByIdForView(blogId);
+            var blog = await _blogDal.Get(i => i.IsPublished && i.BlogId == blogId,
+                                          i => i.Include(x => x.Comments).Include(x => x.Category));
             if (blog == null)
             {
                 return new ErrorDataResult<BlogForViewDto>("Aradığınız makale bulunamadı.");
@@ -42,35 +51,43 @@ namespace Business.Concrete
 
         public async Task<IResult> AddComment(CommentDto comment)
         {
-            await _blogDal.AddComment(_mapper.Map<Comment>(comment));
-            return new SuccessResult(Messages.CommentSuccess);
-        }
+            var entity = _mapper.Map<Comment>(comment);
+            var blog = await _blogDal.Get(i => i.BlogId == comment.BlogId,
+                                    i => i.Include(i => i.Comments));
+            blog.Comments.Add(entity);
+            await _blogDal.UpdateAsync(blog);
 
-        public async Task<IResult> RemoveComment(CommentDto comment)
-        {
-            await _blogDal.RemoveComment(_mapper.Map<Comment>(comment));
-            return new SuccessResult("Yorumunuz silindi.");
+            return new SuccessResult(Messages.CommentSuccess);
         }
 
         public async Task<IResult> IncrementView(int blogId)
         {
-            await _blogDal.IncrementView(blogId);
+            var blog = await _blogDal.Get(i => i.BlogId == blogId);
+            blog.ViewCount += 1;
+            await _blogDal.UpdateAsync(blog);
             return new SuccessResult(Messages.IncrementViewSuccess);
         }
 
         public async Task<DataResult<AddOrUpdateBlogDto>> GetByIdWithImages(int blogId)
         {
-            var blog = await _blogDal.GetByIdWithImages(blogId);
+            var blog = await _blogDal.Get(i => i.BlogId == blogId,
+                                          i => i.Include(x => x.BlogImages).Include(x => x.Category));
             if (blog == null)
             {
                 throw new Exception(Messages.BlogNotFound);
             }
-            return new SuccessDataResult<AddOrUpdateBlogDto>(blog);
+
+            return new SuccessDataResult<AddOrUpdateBlogDto>(_mapper.Map<AddOrUpdateBlogDto>(blog));
         }
 
         public async Task<IResult> AddImages(AddOrUpdateBlogDto blog)
         {
-            await _blogDal.AddImages(blog);
+            var blogToUpdate = await _blogDal.Get(i => i.BlogId == blog.BlogId,
+                                                  i => i.Include(x => x.BlogImages));
+
+            blogToUpdate.BlogImages = blog.BlogImages;
+            await _blogDal.UpdateAsync(blogToUpdate);
+
             return new SuccessResult(Messages.AddImagesSuccess);
         }
 
@@ -127,8 +144,8 @@ namespace Business.Concrete
 
         public async Task<DataResult<BlogDto>> GetAll()
         {
-            var blogs = await _blogDal.GetAll();
-            return new SuccessDataResult<BlogDto>(blogs);
+            var blogs = await _blogDal.GetAll(include: i => i.Include(i => i.Category));
+            return new SuccessDataResult<BlogDto>(new BlogDto(blogs));
         }
 
         public async Task<int> GetBlogCount()

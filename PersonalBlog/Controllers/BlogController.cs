@@ -50,7 +50,7 @@ namespace PersonalBlog.Controllers
                 var result = await _blogService.GetByIdWithImages((int)blogId);
                 if (result.Success)
                 {
-                    var model = new AddOrUpdateBlogViewModel(result.Data) { CategoryList = await GetCategories(result.Data.CategoryName) };
+                    var model = new AddOrUpdateBlogViewModel(result.Data) { CategoryList = await GetCategories(result.Data.Category.CategoryName) };
 
                     return View(model);
                 }
@@ -91,7 +91,7 @@ namespace PersonalBlog.Controllers
                 BlogId = model.BlogId,
                 BlogImages = model.BlogImages,
                 CategoryId = model.CategoryId,
-                CategoryName = model.CategoryName,
+                Category = model.Category,
                 Content = model.Content,
                 Header = model.Header,
                 MainImage = model.MainImage,
@@ -104,7 +104,7 @@ namespace PersonalBlog.Controllers
                 if (model.BlogId == 0)
                 {
                     model.BlogId = result.Data;
-                    model.CategoryList = await GetCategories(model.CategoryName);
+                    model.CategoryList = await GetCategories(model.Category.CategoryName);
                     return View(model);
                 }
                 TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.success });

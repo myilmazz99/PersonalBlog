@@ -1,6 +1,7 @@
 ﻿using DataAccess.Abstract;
 using DataAccess.Concrete.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,20 +34,40 @@ namespace DataAccess.Concrete.EntityFramework
             await _context.SaveChangesAsync();
         }
 
-        public async Task<TEntity> Get(Expression<Func<TEntity, bool>> predicate)
+        public async Task<TEntity> Get(Expression<Func<TEntity, bool>> predicate,
+                                       Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
         {
-            return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            var table = _context.Set<TEntity>().AsNoTracking().AsQueryable();
+
+            if (include != null) table = include(table);
+
+            return await table.FirstOrDefaultAsync(predicate);
         }
 
-        public virtual async Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> predicate = null)
+        public async Task<List<TEntity>> GetAll(int skip = 0,
+                                                int take = int.MaxValue,
+                                                Expression<Func<TEntity, bool>> filter = null,
+                                                Expression<Func<TEntity, object>> orderby = null,
+                                                Expression<Func<TEntity, object>> orderbyDescending = null,
+                                                Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null)
         {
-            return predicate == null ? await _context.Set<TEntity>().ToListAsync() :
-                                       await _context.Set<TEntity>().Where(predicate).ToListAsync();
+            var table = _context.Set<TEntity>().AsNoTracking().AsQueryable();
+
+            if (include != null)
+                table = include(table);
+
+            if (filter != null)
+                table = table.Where(filter);
+
+            if (orderby != null || orderbyDescending != null)
+                table = orderby != null ? table.OrderBy(orderby) : table.OrderByDescending(orderbyDescending);
+
+            return await table.Skip(skip).Take(take).ToListAsync();
         }
 
         public virtual async Task UpdateAsync(TEntity entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Set<TEntity>().Update(entity);
             await _context.SaveChangesAsync();
         }
     }

@@ -16,10 +16,10 @@ namespace Entities.Dtos
         public string Header { get; set; }
         public string Content { get; set; }
         public string MainImage { get; set; }
-        public string CategoryName { get; set; }
         public int CategoryId { get; set; }
         public bool IsPublished { get; set; }
         public string WriterId { get; set; }
+        public Category Category { get; set; }
         public List<BlogImage> BlogImages { get; set; }
     }
 }

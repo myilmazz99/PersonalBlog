@@ -21,7 +21,7 @@ namespace PersonalBlog.Models
             Header = _addOrUpdateBlogDto.Header;
             Content = _addOrUpdateBlogDto.Content;
             MainImage = _addOrUpdateBlogDto.MainImage;
-            CategoryName = _addOrUpdateBlogDto.CategoryName;
+            Category = _addOrUpdateBlogDto.Category;
             CategoryId = _addOrUpdateBlogDto.CategoryId;
             BlogImages = _addOrUpdateBlogDto.BlogImages;
             IsPublished = _addOrUpdateBlogDto.IsPublished;
@@ -34,7 +34,7 @@ namespace PersonalBlog.Models
         public string Header { get; set; }
         public string Content { get; set; }
         public string MainImage { get; set; }
-        public string CategoryName { get; set; }
+        public Category Category { get; set; }
         [Range(1, 99999, ErrorMessage = "Kategori belirlemek zorunludur.")]
         public int CategoryId { get; set; }
         public bool IsPublished { get; set; }

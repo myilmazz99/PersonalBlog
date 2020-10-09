@@ -22,6 +22,10 @@ namespace Business.Mapper
 
             CreateMap<Blog, AddOrUpdateBlogDto>();
             CreateMap<AddOrUpdateBlogDto, Blog>();
+
+            CreateMap<Blog, BlogListDto>()
+                .ForMember(d => d.AddedDate, s => s.MapFrom(i => i.AddedDate.ToLongDateString()))
+                .ForMember(d => d.CategoryName, s => s.MapFrom(i => i.Category.CategoryName));
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace PersonalBlog.Models
 {
-    public class AddOrUpdateBlogViewModel
+    public class BlogListViewModel
     {
+        public List<BlogListDto> BlogListDto { get; set; }
         public List<SelectListItem> CategoryList { get; set; }
-        public AddOrUpdateBlogDto AddOrUpdateBlogDto { get; set; }
     }
 }

@@ -142,10 +142,10 @@ namespace Business.Concrete
             return new SuccessResult(Messages.DeleteBlogSuccess);
         }
 
-        public async Task<DataResult<BlogDto>> GetAll()
+        public async Task<DataResult<List<BlogListDto>>> GetAll()
         {
             var blogs = await _blogDal.GetAll(include: i => i.Include(i => i.Category));
-            return new SuccessDataResult<BlogDto>(new BlogDto(blogs));
+            return new SuccessDataResult<List<BlogListDto>>(_mapper.Map<List<BlogListDto>>(blogs));
         }
 
         public async Task<int> GetBlogCount()

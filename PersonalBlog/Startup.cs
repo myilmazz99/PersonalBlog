@@ -18,6 +18,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using PersonalBlog.Extensions;
+using PersonalBlog.Seeds;
+using Microsoft.Extensions.Logging;
 
 namespace PersonalBlog
 {
@@ -74,7 +76,7 @@ namespace PersonalBlog
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, ILogger<Startup> logger)
         {
 
             if (env.IsDevelopment())
@@ -83,10 +85,10 @@ namespace PersonalBlog
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithRedirects("/Error/{0}");
             }
 
-            app.ConfigureExceptionHandler();
+            app.ConfigureExceptionHandler(logger);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -113,6 +115,8 @@ namespace PersonalBlog
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            SeedIdentity.Seed(userManager).Wait();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Business.Abstract
         Task<DataResult<BlogForViewDto>> GetByIdForView(int blogId);
         Task<DataResult<List<BlogForViewDto>>> GetAllForView(int page);
         Task<DataResult<AddOrUpdateBlogDto>> GetByIdWithImages(int blogId);
-        Task<DataResult<BlogDto>> GetAll();
+        Task<DataResult<List<BlogListDto>>> GetAll();
         Task<IResult> AddComment(CommentDto comment);
         Task<IResult> IncrementView(int blogId);
         Task<IResult> AddImages(AddOrUpdateBlogDto blog);

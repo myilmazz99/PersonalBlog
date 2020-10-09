@@ -6,11 +6,11 @@ using Business.Abstract;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PersonalBlog.Extensions;
 using PersonalBlog.Models;
+using Entities.Dtos;
 
 namespace PersonalBlog.Controllers
 {
@@ -35,8 +35,7 @@ namespace PersonalBlog.Controllers
 
             if (result.Success)
             {
-                var blogs = new BlogViewModel(result.Data.BlogDtos);
-                return View(blogs.BlogViewModels);
+                return View(result.Data);
             }
 
             return View("Error");
@@ -44,24 +43,24 @@ namespace PersonalBlog.Controllers
 
         public async Task<IActionResult> AddOrUpdate(int? blogId)
         {
-
             if (blogId != null)
             {
                 var result = await _blogService.GetByIdWithImages((int)blogId);
-                if (result.Success)
+                var model = new AddOrUpdateBlogViewModel
                 {
-                    var model = new AddOrUpdateBlogViewModel(result.Data) { CategoryList = await GetCategories(result.Data.Category.CategoryName) };
+                    CategoryList = await GetCategories(result.Data.CategoryId),
+                    AddOrUpdateBlogDto = result.Data
+                };
 
-                    return View(model);
-                }
-                else
-                {
-                    return View("Error");
-                }
+                return View(model);
             }
             else
             {
-                return View(new AddOrUpdateBlogViewModel { CategoryList = await GetCategories("") });
+                return View(new AddOrUpdateBlogViewModel
+                {
+                    CategoryList = await GetCategories(),
+                    AddOrUpdateBlogDto = new AddOrUpdateBlogDto()
+                });
             }
 
         }
@@ -80,33 +79,24 @@ namespace PersonalBlog.Controllers
                     await mainImage.CopyToAsync(stream);
                 }
 
-                model.MainImage = imageUrl;
+                model.AddOrUpdateBlogDto.MainImage = imageUrl;
             }
 
             //apply writer
             var userIdResult = _accountService.GetUserId(HttpContext.User);
+            model.AddOrUpdateBlogDto.WriterId = userIdResult.Data;
 
-            var result = await _blogService.AddOrUpdate(new Entities.Dtos.AddOrUpdateBlogDto
-            {
-                BlogId = model.BlogId,
-                BlogImages = model.BlogImages,
-                CategoryId = model.CategoryId,
-                Category = model.Category,
-                Content = model.Content,
-                Header = model.Header,
-                MainImage = model.MainImage,
-                IsPublished = model.IsPublished,
-                WriterId = userIdResult.Data
-            });
+            var result = await _blogService.AddOrUpdate(model.AddOrUpdateBlogDto);
 
             if (result.Success)
             {
-                if (model.BlogId == 0)
+                if (model.AddOrUpdateBlogDto.BlogId == 0)
                 {
-                    model.BlogId = result.Data;
-                    model.CategoryList = await GetCategories(model.Category.CategoryName);
+                    model.AddOrUpdateBlogDto.BlogId = result.Data;
+                    model.CategoryList = await GetCategories(model.AddOrUpdateBlogDto.CategoryId);
                     return View(model);
                 }
+
                 TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.success });
                 return RedirectToAction("BlogList");
             }
@@ -178,7 +168,7 @@ namespace PersonalBlog.Controllers
             return View("Error");
         }
 
-        private async Task<List<SelectListItem>> GetCategories(string selectedCategory)
+        private async Task<List<SelectListItem>> GetCategories(int selectedCategoryId = 0)
         {
             var categories = await _categoryService.GetAll();
 
@@ -186,7 +176,7 @@ namespace PersonalBlog.Controllers
 
             foreach (var item in categories.Data)
             {
-                selectList.Add(new SelectListItem { Text = item.CategoryName, Value = item.CategoryId.ToString(), Selected = item.CategoryName == selectedCategory ? true : false });
+                selectList.Add(new SelectListItem { Text = item.CategoryName, Value = item.CategoryId.ToString(), Selected = item.CategoryId == selectedCategoryId ? true : false });
             }
 
             return selectList;

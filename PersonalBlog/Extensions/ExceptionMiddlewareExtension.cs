@@ -8,7 +8,7 @@ namespace PersonalBlog.Extensions
 {
     public static class ExceptionMiddlewareExtension
     {
-        public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+        public static void ConfigureExceptionHandler(this IApplicationBuilder app, ILogger<Startup> logger)
         {
 
             app.UseExceptionHandler(appError =>
@@ -18,7 +18,11 @@ namespace PersonalBlog.Extensions
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
                     if (contextFeature != null)
                     {
-                        await Task.Run(() => { Exception ex = CheckInnerException(contextFeature.Error); });
+                        await Task.Run(() =>
+                        {
+                            Exception ex = CheckInnerException(contextFeature.Error);
+                            logger.LogError(ex.Message);
+                        });
 
                         context.Response.StatusCode = 500;
                     }
@@ -28,7 +32,7 @@ namespace PersonalBlog.Extensions
 
         private static Exception CheckInnerException(Exception ex)
         {
-            if (ex.InnerException != null) CheckInnerException(ex);
+            if (ex.InnerException != null) CheckInnerException(ex.InnerException);
 
             return ex;
         }

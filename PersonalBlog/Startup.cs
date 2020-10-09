@@ -54,6 +54,7 @@ namespace PersonalBlog
             {
                 opt.User.RequireUniqueEmail = true;
                 opt.SignIn.RequireConfirmedEmail = true;
+                opt.Password.RequireNonAlphanumeric = false;
                 opt.Lockout.MaxFailedAccessAttempts = 3;
                 opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(30);
             });
@@ -78,7 +79,7 @@ namespace PersonalBlog
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, ILogger<Startup> logger)
         {
-
+            var tety = env.IsDevelopment();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

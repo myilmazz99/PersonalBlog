@@ -20,7 +20,7 @@ namespace PersonalBlog.Seeds
                     ProfileImageUrl = "/img/uploads/profile-icon.jpg"
                 };
 
-                await userManager.CreateAsync(admin, "Bilelimadmin1");
+                var result = await userManager.CreateAsync(admin, "Bilelimadmin1");
             }
         }
     }

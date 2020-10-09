@@ -34,6 +34,8 @@ namespace PersonalBlog.Controllers.Api
             foreach (var item in result.Data)
             {
                 var user = await _accountService.GetUserById(item.WriterId);
+                if (!user.Success) throw new Exception(result.Message);
+
                 item.WriterName = user.Data.FullName;
                 item.WriterSummary = user.Data.Summary;
                 item.WriterProfilePictureUrl = user.Data.ProfileImageUrl;

@@ -5,7 +5,6 @@ const Header = ({ img, text, pickAphorism }) => {
   const [aphorism, setAphorism] = useState();
 
   useEffect(() => {
-
     if (pickAphorism) {
       pickAphorism().then((i) => setAphorism(i));
     }
@@ -19,7 +18,7 @@ const Header = ({ img, text, pickAphorism }) => {
           <div>
             {aphorism
               ? aphorism.aphorism
-              : text || "myblog.com'a hoşgeldiniz! Keyifli okumalar."}
+              : text || "bilelim.com'a hoşgeldiniz! Keyifli okumalar."}
           </div>
           <small>{aphorism ? `- ${aphorism.writer}` : ""}</small>
         </h1>

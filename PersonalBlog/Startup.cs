@@ -46,8 +46,8 @@ namespace PersonalBlog
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<SignInManager<ApplicationUser>>();
 
-            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseNpgsql(Configuration.GetSection("ConnectionString").Value));
-            services.AddDbContext<BlogContext>(opt => opt.UseNpgsql(Configuration.GetSection("ConnectionString").Value));
+            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
+            services.AddDbContext<BlogContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
             //Server=(localdb)\\mssqllocaldb;Database=PersonalBlogDB;Trusted_Connection=True
             services.AddIdentity<ApplicationUser, IdentityRole>().AddErrorDescriber<IdentityErrorDescriberTurkish>().AddEntityFrameworkStores<ApplicationIdentityContext>().AddDefaultTokenProviders();
 

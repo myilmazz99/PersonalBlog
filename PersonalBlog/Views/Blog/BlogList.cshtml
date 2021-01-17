@@ -5,11 +5,16 @@
     Layout = "_Layout";
 }
 
-<h1>Blog Listesi</h1>
+<div class="p-2 bg-primary shadow">
+    <h1 class="text-white mt-1">İçerikler</h1>
 
-<a asp-controller="Blog" asp-action="AddOrUpdate" class="btn btn-success mb-2">Yeni Blog</a>
+    <div class="d-flex j-end">
+    <a asp-controller="Blog" asp-action="AddOrUpdate" class="btn btn-white shadow">İçerik Oluştur</a>
+    </div>
+</div>
 
-<table class="table table-bordered table-striped text-center">
+<div class="mx-2 my-4 table-responsive">
+   <table class="table text-center">
     <thead>
         <tr>
             <th>#</th>
@@ -27,24 +32,52 @@
             <tr>
                 <td>@item.BlogId</td>
                 <td><img src="@item.MainImage" width="80" height="40" /></td>
-                <td>@item.Header</td>
+                <td>@(item.Header.Length > 50 ? item.Header.Substring(0, 50) + "..." : item.Header)</td>
                 <td>@item.CategoryName</td>
                 <td>@item.AddedDate</td>
                 <td>
                     @if (item.IsPublished)
                     {
-                        <div class="badge badge-pill badge-success">Yayında</div>
+                        <div class="mp-badge success">Yayında</div>
                     }
                     else
                     {
-                        <div class="badge badge-pill badge-danger">Yayında değil</div>
+                        <div class="mp-badge danger">Yayında değil</div>
                     }
                 </td>
                 <td>
-                    <a asp-controller="Blog" asp-action="AddOrUpdate" asp-route-blogId="@item.BlogId" class="btn btn-warning btn-sm">Düzenle</a>
-                    <a asp-controller="Blog" asp-action="Delete" asp-route-blogId="@item.BlogId" class="btn btn-danger btn-sm">Sil</a>
+                    <a asp-controller="Blog" asp-action="AddOrUpdate" asp-route-blogId="@item.BlogId" class="btn btn-warning small">Düzenle</a>
+                    <a data-blogId="@item.BlogId" class="delete-blog-btn btn btn-danger small">Sil</a>
                 </td>
             </tr>
         }
     </tbody>
-</table>
+</table> 
+</div>
+
+@section Scripts{
+    <script>
+        const deleteBlogBtns = document.querySelectorAll(".delete-blog-btn");
+        if(deleteBlogBtns.length > 0) {
+            deleteBlogBtns.forEach(b => {
+                var blogId = Number(b.getAttribute("data-blogId"));
+                b.addEventListener("click", function(){deleteBlog(this, blogId)});
+            })
+        }
+
+           function deleteBlog(btn, id){
+            mFeedback.alert("İçeriği silmek istediğinize emin misiniz?", async function(){
+                try{
+                    await fetch(`/admin/blogs/delete?blogId=${id}`);
+                    const rowToDelete = btn.closest("tr");
+                    const tbody = btn.closest("tbody");
+                    tbody.removeChild(rowToDelete);
+                    mFeedback.notify.success("İçerik silindi.");
+                }catch(e){
+                    mFeedback.notify.error("İçerik silinemedi.");
+                    console.log(e);
+                }
+            })
+        }
+    </script>
+}

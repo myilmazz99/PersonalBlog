@@ -79,11 +79,10 @@ namespace PersonalBlog.Controllers
             if (result.Success)
             {
                 TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.danger });
-                return RedirectToAction("CategoryList");
+                return NoContent();
             }
 
-            return View("Error");
-            
+            return BadRequest();
         }
     }
 }

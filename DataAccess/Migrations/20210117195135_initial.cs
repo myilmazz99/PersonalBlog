@@ -1,10 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace DataAccess.Migrations.Blog
+namespace DataAccess.Migrations
 {
-    public partial class postgresInitial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +12,7 @@ namespace DataAccess.Migrations.Blog
                 columns: table => new
                 {
                     CategoryId = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -26,7 +25,7 @@ namespace DataAccess.Migrations.Blog
                 columns: table => new
                 {
                     BlogId = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Header = table.Column<string>(nullable: true),
                     Content = table.Column<string>(nullable: true),
                     MainImage = table.Column<string>(nullable: true),
@@ -52,7 +51,7 @@ namespace DataAccess.Migrations.Blog
                 columns: table => new
                 {
                     CommentId = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BlogId = table.Column<int>(nullable: false),
                     CommentText = table.Column<string>(nullable: true),
                     Username = table.Column<string>(nullable: true)
@@ -73,7 +72,7 @@ namespace DataAccess.Migrations.Blog
                 columns: table => new
                 {
                     BlogImageId = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BlogId = table.Column<int>(nullable: false),
                     ImageUrl = table.Column<string>(nullable: true)
                 },

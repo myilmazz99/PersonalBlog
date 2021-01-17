@@ -5,26 +5,35 @@
     var isCreate = Model.CategoryId == 0 ? true : false;
 }
 
-<h1>@(!isCreate ? "Düzenle" : "Yeni Kategori")</h1>
+<div class="p-4 bg-primary shadow">
+    <h1 class="text-white">@(!isCreate ? "Düzenle" : "Yeni Kategori")</h1>
+    <div class="d-flex j-end">
+        <a asp-controller="Category" asp-action="CategoryList" class="link text-white">Listeye Dön</a>
+    </div>
+</div>
 
-<button asp-controller="Category" asp-action="CategoryList" class="btn btn-outline-primary mb-1">Kategori Listesi</button>
 
-<form asp-controller="Category" asp-action="AddOrUpdate" method="post">
+<form asp-controller="Category" asp-action="AddOrUpdate" method="post" class="m-4">
     <input type="hidden" asp-for="CategoryId" />
 
     @if (!isCreate)
     {
-        <div class="form-group">
-            <label>Id</label>
-            <input asp-for="CategoryId" class="form-control" disabled />
-        </div>
+        <label class="sliding-input mb-4">
+            <div class="input-wrapper input-underline">
+                <input asp-for="CategoryId" readonly>
+                <span class="placeholder">ID</span>
+            </div>
+        </label>
     }
 
-<div class="form-group">
-    <label>Kategori Adı</label>
-    <span asp-validation-for="CategoryName" class="d-block text-danger"></span>
-    <input asp-for="CategoryName" class="form-control" />
-</div>
+        <label class="sliding-input mb-4">
+            <div class="input-wrapper input-underline">
+                <input asp-for="CategoryName" >
+                <span class="placeholder">Kategori Adı</span>
+            </div>
+            <span asp-validation-for="CategoryName" class="error"></span>
+        </label>
+    
 
     <button type="submit" class="btn btn-success">Kaydet</button>
 

@@ -46,9 +46,9 @@ namespace PersonalBlog
             services.AddTransient<UserManager<ApplicationUser>>();
             services.AddTransient<SignInManager<ApplicationUser>>();
 
-            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseNpgsql(Configuration.GetSection("ConnectionString").Value));
-            services.AddDbContext<BlogContext>(opt => opt.UseNpgsql(Configuration.GetSection("ConnectionString").Value));
-            //Server=(localdb)\\mssqllocaldb;Database=PersonalBlogDB;Trusted_Connection=True
+            services.AddDbContext<ApplicationIdentityContext>(opt => opt.UseSqlServer(@"Server=arya.veridyen.com\MSSQLSERVER2016;Database=bilelim;User Id=myyilmaz_admin;Password=Bilelimadmin1;"));
+            services.AddDbContext<BlogContext>(opt => opt.UseSqlServer(@"Server=arya.veridyen.com\MSSQLSERVER2016;Database=bilelim;User Id=myyilmaz_admin;Password=Bilelimadmin1;"));
+            
             services.AddIdentity<ApplicationUser, IdentityRole>().AddErrorDescriber<IdentityErrorDescriberTurkish>().AddEntityFrameworkStores<ApplicationIdentityContext>().AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(opt =>
@@ -64,13 +64,13 @@ namespace PersonalBlog
             {
                 conf.LoginPath = "/admin";
                 conf.LogoutPath = "/";
-                conf.SlidingExpiration = false;
+                conf.SlidingExpiration = true;
                 conf.AccessDeniedPath = "/notfound";
                 conf.ExpireTimeSpan = TimeSpan.FromHours(24);
                 conf.Cookie = new CookieBuilder { HttpOnly = true, Name = "Identity", SameSite = SameSiteMode.Strict };
             });
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
             services.AddSpaStaticFiles(configuration =>
             {

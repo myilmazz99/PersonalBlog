@@ -5,110 +5,120 @@
 
     //BlogId 0 ise Yeni Blog eklenecek, değilse mevcut blog düzenlenecektir ve sayfa buna göre render edilecek.
     bool IsNew = Model.AddOrUpdateBlogDto.BlogId == 0 ? true : false;
+    var selected = Model.CategoryList.FirstOrDefault(i=>i.Selected);
 }
 
-<h1>@(IsNew ? "Yeni Blog" : "Düzenle")</h1>
+<div class="p-4 bg-primary shadow">
+    <h1 class="text-white">@(IsNew ? "Yeni İçerik" : "İçeriği Düzenle")</h1>
+</div>
 
-<hr />
-
-<form asp-controller="Blog" asp-action="AddOrUpdate" method="post" enctype="multipart/form-data">
+<form asp-controller="Blog" asp-action="AddOrUpdate" method="post" enctype="multipart/form-data" class="container my-4">
 
     @if (!IsNew)
     {
-        <div class="form-group">
-            <h5>Id</h5>
-            <input asp-for="AddOrUpdateBlogDto.BlogId" class="form-control bg-light" readonly />
-        </div>
+        <label class="sliding-input mb-4">
+            <div class="input-wrapper input-underline">
+                <input asp-for="AddOrUpdateBlogDto.BlogId" readonly>
+                <span class="placeholder">ID</span>
+            </div>
+        </label>
     }
 
-    <div class="form-group">
-        <h5>Kategori</h5>
-        <span asp-validation-for="AddOrUpdateBlogDto.CategoryId" class="d-block text-danger"></span>
-        <select class="form-control" asp-for="AddOrUpdateBlogDto.CategoryId" asp-items="@Model.CategoryList">
-            @if (IsNew)
-            {
-                <option value="0" selected>-- Kategori Seç --</option>
-            }
-        </select>
-    </div>
+    <div class="my-select-wrapper w-25 mb-4">
+                  <select class="my-select" data-placeholder=@(IsNew ? "Kategori Seçiniz" : selected.Text) asp-for="AddOrUpdateBlogDto.CategoryId" asp-items="@Model.CategoryList">
+                  </select>
+                </div>
+    
+    <label class="sliding-input mb-4">
+                <div class="input-wrapper input-underline">
+                  <input asp-for="AddOrUpdateBlogDto.Header" type="text">
+                  <span class="placeholder">Başlık</span>
+                </div>
+              <span asp-validation-for="AddOrUpdateBlogDto.Header" class="error"></span>
+            </label>
 
-    <div class="form-group">
-        <h5>Başlık</h5>
-        <span asp-validation-for="AddOrUpdateBlogDto.Header" class="d-block text-danger"></span>
-        <input asp-for="AddOrUpdateBlogDto.Header" class="form-control" />
-    </div>
-
+    
     @if (!IsNew)
     {
-        <div class="form-group">
-            <h5>Ana Resim</h5>
-            <span asp-validation-for="AddOrUpdateBlogDto.MainImage" class="d-block text-danger"></span>
-            <div class="upload-wrapper">
-                @if (Model.AddOrUpdateBlogDto.MainImage != null)
-                {
-                    <img src="@Model.AddOrUpdateBlogDto.MainImage" width="200" class="d-block my-2" />
-                }
-                else
-                {
-                    <div class="text-center text-danger">Henüz seçilmedi.</div>
-                }
-                <input name="mainImage" type="file" class="dropify" data-width="200" data-allowed-file-extensions="jpg jpeg png svg webp" />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <h5>Resimler</h5>
-            <div class="text-right">
-                <a class="btn btn-primary mb-1 text-white" data-toggle="modal" data-target="#uploadImagesModal">Resim Yükle</a>
-            </div>
-            <table class="table table-striped table-sm">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Resim</th>
-                        <th>URL</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="uploaded-images">
-                    @if (Model.AddOrUpdateBlogDto.BlogImages.Count == 0)
+            <div class="mb-4">
+                <h3 class="mb-1">Ana Resim</h3>
+                <div class="d-flex a-center j-between">
+                    @if (Model.AddOrUpdateBlogDto.MainImage != null)
                     {
-                        <tr>
-                            <td colspan="5" class="alert alert-danger py-4 text-center">Bu blog'a henüz fotoğraf yüklenmemiş.</td>
-                        </tr>
+                        <img src="@Model.AddOrUpdateBlogDto.MainImage" width="200" class="d-block my-2" />
                     }
                     else
                     {
-                        foreach (var item in Model.AddOrUpdateBlogDto.BlogImages)
+                        <div class="text-center text-danger mr-2">Henüz seçilmedi.</div>
+                    }
+                    <label class="m-file-upload">
+                        <input name="mainImage" type="file" data-extensions="svg, png, jpg, jpeg" multiple>
+                    </label>
+                </div>
+                <span asp-validation-for="AddOrUpdateBlogDto.MainImage" class="d-block text-danger"></span>
+            </div>
+
+        //img table
+        <div class="mb-4">
+            <h3>İçeriğe yerleştirmek üzere resim yükleyin</h3>
+            <div class="d-flex j-between">
+                <table class="table w-75">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Resim</th>
+                            <th>URL</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="w-100" id="uploaded-images">
+                        @if (Model.AddOrUpdateBlogDto.BlogImages.Count == 0)
                         {
                             <tr>
-                                <td>@item.BlogImageId</td>
-                                <td><img src="@item.ImageUrl" width="90" /></td>
-                                <td>@item.ImageUrl</td>
-                                <td>
-                                    <a asp-controller="Blog" asp-action="DeleteImage" asp-route-blogImageId="@item.BlogImageId" asp-route-blogId="@Model.AddOrUpdateBlogDto.BlogId" class="btn btn-danger btn-sm">Sil</a>
-                                </td>
+                                <td colspan="5" class="text-gray w-75">Bu blog'a henüz fotoğraf yüklenmemiş.</td>
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            foreach (var item in Model.AddOrUpdateBlogDto.BlogImages)
+                            {
+                                <tr>
+                                    <td>@item.BlogImageId</td>
+                                    <td><img src="@item.ImageUrl" width="60" /></td>
+                                    <td>@item.ImageUrl</td>
+                                    <td>
+                                        <a asp-controller="Blog" asp-action="DeleteImage" asp-route-blogImageId="@item.BlogImageId" asp-route-blogId="@Model.AddOrUpdateBlogDto.BlogId" class="btn btn-danger btn-sm">Sil</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
 
-                </tbody>
+                    </tbody>
             </table>
+            <a class="btn btn-primary mb-1 text-white" style="align-self: center;" data-modal="uploadImagesModal">Resim Yükle</a>
+            </div>
+            
         </div>
 
-        <div class="form-group">
-            <h5>İçerik</h5>
+        <div class="mb-4">
+            <h3 class="mb-2">İçerik Metni</h3>
+            <textarea class="editor" id="blog-content" asp-for="AddOrUpdateBlogDto.Content">
+                @Model.AddOrUpdateBlogDto.Content
+            </textarea>
             <span asp-validation-for="AddOrUpdateBlogDto.Content" class="d-block text-danger"></span>
-            <textarea id="blog-content" asp-for="AddOrUpdateBlogDto.Content">
-            @Model.AddOrUpdateBlogDto.Content
-        </textarea>
         </div>
 
-        <div class="form-group">
-            <label>Durum : <span class="badge badge-pill badge-@(Model.AddOrUpdateBlogDto.IsPublished ? "success" : "danger")">@(Model.AddOrUpdateBlogDto.IsPublished ? "Yayında" : "Yayında değil")</span></label>
-            <div>
-                <input type="radio" asp-for="AddOrUpdateBlogDto.IsPublished" value="true" /> Yayınla
-                <input type="radio" asp-for="AddOrUpdateBlogDto.IsPublished" value="false" class="ml-2" /> Yayından kaldır
+        <div class="mb-4">
+            <label>Durum: <span class="mp-badge @(Model.AddOrUpdateBlogDto.IsPublished ? "success" : "danger")">@(Model.AddOrUpdateBlogDto.IsPublished ? "Yayında" : "Yayında değil")</span></label>
+            <div class="mt-2 d-flex">
+                <label class="input-radio radio-box mr-2">
+                    <input type="radio" asp-for="AddOrUpdateBlogDto.IsPublished" value="true">
+                    <span class="text">Yayınla</span>
+                </label>
+                <label class="input-radio radio-box">
+                    <input type="radio" asp-for="AddOrUpdateBlogDto.IsPublished" value="false">
+                    <span class="text">Yayından Kaldır</span>
+                </label>
             </div>
             
         </div>
@@ -118,32 +128,22 @@
 </form>
 
 <!-- Upload Modal -->
-<div class="modal fade" id="uploadImagesModal" tabindex="-1" role="dialog" aria-labelledby="uploadImagesModal" aria-hidden="true">
-    <div class="modal-dialog  modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Resim Yükle</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+<div class="m-modal" id="uploadImagesModal">
+    <div class="m-modal-inner bg-white p-2 w-75">
+        <div class="m-modal-dismiss"></div>
             <form enctype="multipart/form-data">
-                <div class="modal-body">
                     <input type="hidden" name="blogId" value="@Model.AddOrUpdateBlogDto.BlogId" />
-                    <input type="file" name="files" multiple class="dropify multiple" />
+                    <label class="m-file-upload my-3">
+                        <input name="files" type="file" data-extensions="svg, png, jpg, jpeg" multiple>
+                    </label>
                     <div class="multiple-upload-err text-danger"></div>
-                </div>
-                <div class="modal-footer">
                     <button id="submitUploadMultipleBtn" class="btn btn-primary">Yükle</button>
-                </div>
             </form>
-        </div>
     </div>
 </div>
 
 @section Scripts{
     <partial name="_ClientValidation" />
-    <script src="~/tinymce/tinymce.min.js"></script>
     <script>
         $("#submitUploadMultipleBtn").click(submitMultipleImage);
 
@@ -160,7 +160,7 @@
                 contentType: false,
                 data: files
             }).done(() => {
-                [...$(".multiple")[0].files].forEach(i => {
+                [...$("#uploadImagesModal input[type='file']")[0].files].forEach(i => {
                     $("#uploaded-images").append(`<tr>
                                         <td></td>
                                         <td><img src="/img/uploads/${i.name}" width="90" /></td>
@@ -169,29 +169,15 @@
                                     </tr>`)
                 });
 
-                $("#uploadImagesModal").modal("hide");
+                const modal = mModal.modal("uploadImagesModal")
+                modal.dismiss();
             }).fail((resp) => {
                 $(".multiple-upload-err").append(resp.responseText);
             });
         }
+    </script>
 
-        tinymce.init({
-            selector: '#blog-content',
-            plugins: 'code, image, imagetools, table, media',
-            toolbar:'image',
-            height: 500,
-            max_height: 700,
-            language: 'tr'
-        });
-
-        $('.dropify').dropify({
-            messages: {
-                'default': 'Yüklemek istediğiniz dosyaları sürükleyip bırakın, veya bir defa tıklayın.',
-                'remove': 'Sil'
-            },
-            error: {
-                'fileSize': 'Dosya boyutu en fazla 3 MB olmalıdır.'
-            }
-        });
+    <script>
+        mPanel.initEditor("/mPanel/tinymce")
     </script>
 }

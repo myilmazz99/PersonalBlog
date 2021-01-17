@@ -70,7 +70,7 @@ namespace PersonalBlog.Controllers
         {
             if (mainImage != null)
             {
-                var dir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/uploads");
+                var dir = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\img\uploads");
                 var filePath = Path.Combine(dir, mainImage.FileName);
                 var imageUrl = Path.Combine(Path.DirectorySeparatorChar.ToString(), "img", "uploads", mainImage.FileName);
 
@@ -112,10 +112,10 @@ namespace PersonalBlog.Controllers
             if (result.Success)
             {
                 TempData.Put("message", new ResultMessageViewModel { Message = result.Message, CssColor = CssColor.danger });
-                return RedirectToAction("BlogList");
+                return NoContent();
             }
 
-            return View("Error");
+            return BadRequest();
         }
 
         public async Task<IActionResult> UploadMultipleImages(List<IFormFile> files, int? blogId)
